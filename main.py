@@ -24,19 +24,19 @@ class Todo(BaseModel):
 
     @field_validator("id", mode="before")
     def check_id_before(cls, value: int):
-        assert value, 'GGs'
+        assert value, 'GGs' # here another validation before enter the above DTO
         return value
     
     @model_validator(mode="after")
     def check_title_after(self):
-        assert self.title != "what", " 'what' is Not allowed"
+        assert self.title != "what", " 'what' is Not allowed" # here another validation after enter the above DTO
         return self
 
 
 toDos = {
-    0:Todo(title='first_title', category=Category.PERSONAL, completed=True,id=4),
-    1:Todo(title='second_title', category=Category.WORK, completed=False,id=3),
-}
+        0:Todo(title='first_title', category=Category.PERSONAL, completed=True,id=4),
+        1:Todo(title='second_title', category=Category.WORK, completed=False,id=3),
+    }
 
 
 @app.get('/')
