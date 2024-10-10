@@ -4,7 +4,11 @@ from enum import Enum
 from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+app = FastAPI(
+    title="Todo App",
+    description="Our Basic Todo App",
+    version="0.0.1"
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -13,6 +17,7 @@ app.add_middleware(
 )
 
 class Category(Enum):
+    '''Category Enums'''
     PERSONAL = 'PERSONAL'
     WORK = 'WORK'
 
@@ -73,3 +78,10 @@ def update_todo(todo_id:int,todo:Todo):
     toDos[todo_id] = todo
     print(type(todo))
     return {'new_toDos': toDos}
+
+@app.delete('/todo/{todo_id}')
+def delete_todo(todo_id:int):
+    if todo_id not in toDos:
+        raise HTTPException(status_code=404, detail=f'ID {todo_id} does not exist')
+    toDos.pop(todo_id)
+    return {'new_toDos':toDos}
