@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from scout_apm.sqlalchemy import instrument_sqlalchemy
 
 import os
 from dotenv import load_dotenv
@@ -14,6 +15,13 @@ class BaseDb:
         # Create a read-only engine if provided, else reuse the main one
         self.read_engine = create_engine(read_db_url, future=True) if read_db_url else self.engine
 
+        # instrument_sqlalchemy :
+        # Monitoring Metrics: This enables Scout APM to:
+        # - Measure the execution time of each query.
+        # - Record query metadata (e.g., query type, table accessed).
+        # - Identify slow queries or potential bottlenecks.
+        instrument_sqlalchemy(self.engine)
+        instrument_sqlalchemy(self.read_engine)
         # Configure sessionmaker for both engines
         self.SessionLocal = sessionmaker(bind=self.engine, autocommit=False, autoflush=False)
         self.ReadSessionLocal = sessionmaker(bind=self.read_engine, autocommit=False, autoflush=False)
