@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 from enum import Enum
 from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
+from app.api.auth.routes import router as user_router
 
 app = FastAPI(
     title="Todo App",
@@ -15,6 +16,8 @@ app.add_middleware(
     allow_origins=["*"],  # You can specify the allowed origins
     allow_credentials=True,
 )
+
+app.include_router(user_router)
 
 class Category(Enum):
     '''Category Enums'''
@@ -55,12 +58,12 @@ def get_todo_by_id(todo_id:int):
     return toDos[todo_id]
 
 @app.get('/todo')
-def get_completed_toDos(Hello:str, gg:str,is_completed:Optional[bool]=None) -> dict[str, list[Todo]]: # here (gg and Hello) are query params
+def get_completed_toDos(Hello:str, gg:str,is_completed:Optional[bool]=None): # here (gg and Hello) are query params
     if is_completed:
         filtered_toDos = [todo for todo in toDos.values() if todo.completed is is_completed ]
         return {'toDos':filtered_toDos}
     print("HELLLOOOO")
-    return {'toDos':[]}
+    return {'toDos':toDos}
 
 @app.post('/')
 def create_todo(todo:Todo) -> dict:
