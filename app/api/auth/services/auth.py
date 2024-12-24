@@ -7,11 +7,10 @@ from sqlalchemy import select
 from app.api.auth.models import UserData
 from app.api.schemas import AuthRequest
 import bcrypt
-from app.helper import ReturnResponse
+from app.helper import ReturnResponse, ReturnResponseType
 from jwt import PyJWTError
-
-import jwt
-from jwt import PyJWTError
+import jwt 
+from fastapi.responses import JSONResponse
 
 load_dotenv()
 
@@ -21,7 +20,7 @@ def get_all_users_(session: Session):
 def signup_(session: Session,user_data:AuthRequest):
     foundUser: UserData | None = select_user_by_username(username=user_data.username,session=session)
     if foundUser:
-        raise  HTTPException(status_code=400,detail=f'Username Already Exist')
+        return JSONResponse(status_code=400,content=ReturnResponseType(response=None,error_msg="username already exist",is_successful=False).dict())
     
     hashed_password = hash_password(user_data.password)
     user_data.password = hashed_password

@@ -4,11 +4,12 @@ from enum import Enum
 from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.auth.routes import router as user_router
+import uvicorn
 
 app = FastAPI(
     title="Todo App",
     description="Our Basic Todo App",
-    version="0.0.1"
+    version="0.0.1",
 )
 
 app.add_middleware(
@@ -42,10 +43,9 @@ class Todo(BaseModel):
 
 
 toDos = {
-        0:Todo(title='first_title', category=Category.PERSONAL, completed=True,id=0),
-        1:Todo(title='second_title', category=Category.WORK, completed=False,id=1),
+        0:Todo(title='first_title', category=Category.PERSONAL.value, completed=True,id=0),
+        1:Todo(title='second_title', category=Category.WORK.value, completed=False,id=1),
     }
-
 
 @app.get('/')
 def index():
@@ -88,3 +88,6 @@ def delete_todo(todo_id:int):
         raise HTTPException(status_code=404, detail=f'ID {todo_id} does not exist')
     toDos.pop(todo_id)
     return {'new_toDos':toDos}
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=9000, reload=True)
